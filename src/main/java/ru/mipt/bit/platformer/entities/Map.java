@@ -21,19 +21,17 @@ public class Map implements Disposable {
     private final Batch batch;
     private final TiledMap tiledMap;
     private final MapRenderer renderer;
-    private final TiledMapTileLayer groundLayer;
     private final TileMovement tileMovement;
-
     private final Tank tank;
-    private final List<Obstacle> obtacles;
+    private final List<Obstacle> obstacles;
 
     public Map(String mapFileName, Interpolation interpolation, Tank tank, Obstacle... obstacles) {
         this.batch = new SpriteBatch();
         this.tiledMap = new TmxMapLoader().load(mapFileName);
         this.renderer = createSingleLayerMapRenderer(tiledMap, batch);
-        this.groundLayer = getSingleLayer(tiledMap);
-        this.tileMovement = new TileMovement(this.groundLayer, interpolation);
-        this.obtacles = List.of(obstacles);
+        TiledMapTileLayer groundLayer = getSingleLayer(tiledMap);
+        this.tileMovement = new TileMovement(groundLayer, interpolation);
+        this.obstacles = List.of(obstacles);
 
         this.tank = tank;
         for (MapObject tree: obstacles) {
@@ -42,18 +40,22 @@ public class Map implements Disposable {
     }
 
     public void render(Instruction instruction) {
-        tank.move(tileMovement, obtacles, Gdx.graphics.getDeltaTime(), instruction);
-
         // clear the screen
         Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
         Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
 
+        tank.move(tileMovement, obstacles, Gdx.graphics.getDeltaTime(), instruction);
+
         renderer.render();
+        drawTextures();
+    }
+
+    private void drawTextures() {
         batch.begin();
 
         drawTextureRegionUnscaled(batch, tank);
-        for (MapObject obtacle: obtacles) {
-            drawTextureRegionUnscaled(batch, obtacle);
+        for (Obstacle obstacle: obstacles) {
+            drawTextureRegionUnscaled(batch, obstacle);
         }
 
         batch.end();
@@ -61,8 +63,8 @@ public class Map implements Disposable {
 
     public void dispose() {
         tank.dispose();
-        for (MapObject obtacle: obtacles) {
-            obtacle.dispose();
+        for (Obstacle obstacle: obstacles) {
+            obstacle.dispose();
         }
         tiledMap.dispose();
         batch.dispose();
