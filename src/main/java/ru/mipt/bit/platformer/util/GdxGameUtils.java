@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import ru.mipt.bit.platformer.entities.MapObject;
 
 import java.util.NoSuchElementException;
 
@@ -52,6 +53,14 @@ public final class GdxGameUtils {
         return rectangle.setCenter(tileCenter);
     }
 
+    public static GridPoint2 changedX(GridPoint2 point, int diff) {
+        return new GridPoint2(point).add(diff, 0);
+    }
+
+    public static GridPoint2 changedY(GridPoint2 point, int diff) {
+        return new GridPoint2(point).add(0, diff);
+    }
+
     public static GridPoint2 incrementedY(GridPoint2 point) {
         return new GridPoint2(point).add(0, 1);
     }
@@ -68,12 +77,13 @@ public final class GdxGameUtils {
         return new GridPoint2(point).add(1, 0);
     }
 
-    public static void drawTextureRegionUnscaled(Batch batch, TextureRegion region, Rectangle rectangle, float rotation) {
-        int regionWidth = region.getRegionWidth();
-        int regionHeight = region.getRegionHeight();
+    public static void drawTextureRegionUnscaled(Batch batch, MapObject object) {
+        int regionWidth = object.getGraphics().getRegionWidth();
+        int regionHeight = object.getGraphics().getRegionHeight();
         float regionOriginX = regionWidth / 2f;
         float regionOriginY = regionHeight / 2f;
-        batch.draw(region, rectangle.x, rectangle.y, regionOriginX, regionOriginY, regionWidth, regionHeight, 1f, 1f, rotation);
+        Rectangle rectangle = object.getRectangle();
+        batch.draw(object.getGraphics(), rectangle.x, rectangle.y, regionOriginX, regionOriginY, regionWidth, regionHeight, 1f, 1f, object.getRotation());
     }
 
     public static Rectangle createBoundingRectangle(TextureRegion region) {
