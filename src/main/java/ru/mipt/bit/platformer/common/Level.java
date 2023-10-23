@@ -33,6 +33,10 @@ public class Level {
         objects.forEach(mapObject -> mapObject.updateState(deltaTime));
     }
 
+    public List<MapObject> getObjects() {
+        return objects;
+    }
+
     public MapObject getPlayer() {
         return player;
     }

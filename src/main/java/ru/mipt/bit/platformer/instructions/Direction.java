@@ -7,9 +7,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public enum Direction implements Instruction {
     UP(new GridPoint2(0,1), 90),
-    DOWN(new GridPoint2(0,-1), -90),
+    RIGHT(new GridPoint2(1,0), 0),
     LEFT(new GridPoint2(-1,0), -180),
-    RIGHT(new GridPoint2(1,0), 0);
+    DOWN(new GridPoint2(0,-1), -90);
 
     private final GridPoint2 vector;
     private final float rotation;

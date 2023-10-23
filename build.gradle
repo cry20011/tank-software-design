@@ -18,7 +18,9 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
+
 
 dependencies {
     implementation deps.gdx.gdx
@@ -26,6 +28,7 @@ dependencies {
     implementation deps.gdx.platform_desktop
     implementation 'org.junit.jupiter:junit-jupiter:5.9.2'
     implementation 'org.mockito:mockito-core:5.4.0'
+    implementation 'com.github.a-ivanov:tank-software-design-ai:v1.0.1'
 }
 
 test {
