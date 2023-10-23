@@ -3,13 +3,13 @@ package ru.mipt.bit.platformer.controllers;
 
 import org.awesome.ai.AI;
 import org.awesome.ai.Action;
-import org.awesome.ai.Recommendation;
 import org.awesome.ai.state.GameState;
 import org.awesome.ai.state.movable.Bot;
 import org.awesome.ai.state.movable.Orientation;
 import org.awesome.ai.state.movable.Player;
 import org.awesome.ai.strategy.NotRecommendingAI;
 import ru.mipt.bit.platformer.common.Level;
+import ru.mipt.bit.platformer.common.ObjectAddHandler;
 import ru.mipt.bit.platformer.entities.MapObject;
 import ru.mipt.bit.platformer.instructions.Direction;
 import ru.mipt.bit.platformer.instructions.Instruction;;import java.util.ArrayList;
@@ -17,16 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AIInstructionsGenerator implements InstructionsGenerator {
-
-    private final Level level;
+public class AIInstructionsGenerator implements InstructionsGenerator, ObjectAddHandler {
+    private final List<MapObject> objects = new ArrayList<>();
     private final int width;
     private final int height;
 
-    private final AI notRecommendingAI = new NotRecommendingAI();
+    private final AI ai = new NotRecommendingAI();
 
-    public AIInstructionsGenerator(Level level, int width, int height) {
-        this.level = level;
+    public AIInstructionsGenerator(int width, int height) {
         this.width = width;
         this.height = height;
     }
@@ -45,31 +43,21 @@ public class AIInstructionsGenerator implements InstructionsGenerator {
         return Orientation.N;
     }
 
-    private GameState gameStateFromLevel(Level level) {
-        Player player = new Player.PlayerBuilder()
-                .source(level.getPlayer())
-                .x(level.getPlayer().getCoordinates().x)
-                .y(level.getPlayer().getCoordinates().y)
-                .destX(level.getPlayer().getCoordinates().x)
-                .destY(level.getPlayer().getCoordinates().y)
-                .orientation(degreesToOrientation(level.getPlayer().getRotation()))
-                .build();
-
+    private GameState makeGameState() {
         return new GameState.GameStateBuilder()
-                .player(player)
-                .bots(mapObjectsToBots(level.getObjects()))
+                .bots(objectsToBots(objects))
                 .levelWidth(width)
                 .levelHeight(height)
                 .build();
     }
 
-    private List<Bot> mapObjectsToBots(List<MapObject> objects) {
+    private List<Bot> objectsToBots(List<MapObject> objects) {
         List<Bot> bots = new ArrayList<>();
-        objects.forEach(object -> bots.add(mapObjectToBot(object)));
+        objects.forEach(object -> bots.add(objectToBot(object)));
         return bots;
     }
 
-    private Bot mapObjectToBot(MapObject object) {
+    private Bot objectToBot(MapObject object) {
         return new Bot.BotBuilder()
                 .source(object)
                 .x(object.getCoordinates().x)
@@ -98,11 +86,15 @@ public class AIInstructionsGenerator implements InstructionsGenerator {
     @Override
     public Map<MapObject, Instruction> generate() {
         Map<MapObject, Instruction> instructions = new HashMap<>();
-        notRecommendingAI.recommend(gameStateFromLevel(this.level)).forEach(recommendation -> instructions.put(
+        ai.recommend(makeGameState()).forEach(recommendation -> instructions.put(
                 (MapObject) recommendation.getActor().getSource(),
                 actionToInstruction(recommendation.getAction()))
         );
         return instructions;
     }
 
+    @Override
+    public void add(MapObject object) {
+        objects.add(object);
+    }
 }

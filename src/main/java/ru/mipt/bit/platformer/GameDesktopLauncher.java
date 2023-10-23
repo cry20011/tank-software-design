@@ -7,10 +7,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.common.Level;
-import ru.mipt.bit.platformer.controllers.CollisionDetector;
-import ru.mipt.bit.platformer.controllers.GraphicsController;
-import ru.mipt.bit.platformer.controllers.InputController;
-import ru.mipt.bit.platformer.controllers.RandomObjectDirectionsGenerator;
+import ru.mipt.bit.platformer.controllers.*;
 import ru.mipt.bit.platformer.entities.MapObject;
 import ru.mipt.bit.platformer.entities.Tank;
 import ru.mipt.bit.platformer.generators.FileLevelGenerator;
@@ -30,11 +27,12 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     @Override
     public void create() {
-        RandomObjectDirectionsGenerator randomInstructionsGenerator = new RandomObjectDirectionsGenerator();
+//        RandomObjectDirectionsGenerator randomInstructionsGenerator = new RandomObjectDirectionsGenerator();
+        AIInstructionsGenerator aiInstructionsGenerator = new AIInstructionsGenerator(width, height);
 
-        InputController inputController = new InputController(List.of(randomInstructionsGenerator));
+        InputController inputController = new InputController(List.of(aiInstructionsGenerator));
         graphicsController = new GraphicsController("level.tmx");
-        LevelGenerator generator = new FileLevelGenerator("src/main/resources/levels/level1.txt", inputController, List.of(graphicsController, collisionDetector, randomInstructionsGenerator));
+        LevelGenerator generator = new FileLevelGenerator("src/main/resources/levels/level1.txt", inputController, List.of(graphicsController, collisionDetector, aiInstructionsGenerator));
 //        LevelGenerator generator = new RandomLevelGenerator(width, height, inputController, List.of(graphicsController, collisionDetector));
         level = generator.generate();
         level.add(new Tank(new GridPoint2(0, 0)));
