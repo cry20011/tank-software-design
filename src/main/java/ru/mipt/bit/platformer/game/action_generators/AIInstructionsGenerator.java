@@ -44,8 +44,9 @@ public class AIInstructionsGenerator implements ActionGenerator, ObjectAddHandle
         ai.recommend(gameStateFromLevel(objects, width, height)).forEach(
                 recommendation -> objectActionMap.put(
                         (MapObject) recommendation.getActor().getSource(),
-                        convertAiAction(recommendation.getAction()))
-                );
+                        convertAiAction(recommendation.getAction())
+                )
+        );
     }
 
     @Override
