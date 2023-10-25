@@ -1,10 +1,13 @@
-package ru.mipt.bit.platformer.entities;
+package ru.mipt.bit.platformer.game.entities;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.instructions.Direction;
+import ru.mipt.bit.platformer.game.Action;
+import ru.mipt.bit.platformer.game.actions.Direction;
+import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.ActionGenerator;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
-import static ru.mipt.bit.platformer.controllers.CollisionDetector.collides;
+import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.collides;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
 public class Tank implements MapObject {
@@ -18,20 +21,15 @@ public class Tank implements MapObject {
     private GridPoint2 destinationCoordinates;
     private Direction direction;
 
-    public Tank(GridPoint2 coordinates, Direction direction, float movementSpeed) {
-        this.movementProgress = 1;
-        this.coordinates = coordinates;
-        this.destinationCoordinates = coordinates;
-        this.direction = direction;
-        this.movementSpeed = movementSpeed;
-    }
+    private final ActionGenerator actionGenerator;
 
-    public Tank(GridPoint2 coordinates) {
+    public Tank(GridPoint2 coordinates, ActionGenerator actionGenerator) {
         this.movementProgress = 1;
         this.coordinates = coordinates;
         this.destinationCoordinates = coordinates;
         this.direction = DEFAULT_DIRECTION;
-        this.movementSpeed = 0.4f;
+        this.movementSpeed = DEFAULT_MOVEMENT_SPEED;
+        this.actionGenerator = actionGenerator;
     }
 
     private boolean isMoving() {
@@ -65,6 +63,18 @@ public class Tank implements MapObject {
             }
 
             rotate(direction);
+        }
+    }
+
+    @Override
+    public void applyNextAction() {
+        if (actionGenerator == null) {
+            return;
+        }
+
+        Action action = actionGenerator.generateFor(this);
+        if (action != null) {
+            action.applyTo(this);
         }
     }
 

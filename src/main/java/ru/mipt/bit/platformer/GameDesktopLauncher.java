@@ -2,27 +2,20 @@ package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.common.Level;
-import ru.mipt.bit.platformer.controllers.CollisionDetector;
-import ru.mipt.bit.platformer.controllers.GraphicsController;
-import ru.mipt.bit.platformer.controllers.InputController;
-import ru.mipt.bit.platformer.controllers.RandomObjectDirectionsGenerator;
-import ru.mipt.bit.platformer.entities.MapObject;
-import ru.mipt.bit.platformer.entities.Tank;
-import ru.mipt.bit.platformer.generators.FileLevelGenerator;
-import ru.mipt.bit.platformer.generators.LevelGenerator;
-import ru.mipt.bit.platformer.generators.RandomLevelGenerator;
-import ru.mipt.bit.platformer.instructions.Direction;
+import ru.mipt.bit.platformer.game.Level;
+import ru.mipt.bit.platformer.game.game_engine.CollisionDetector;
+import ru.mipt.bit.platformer.game.graphics.GraphicsController;
+import ru.mipt.bit.platformer.game.LevelGenerator;
+import ru.mipt.bit.platformer.game.level_generators.RandomLevelGenerator;
 
 import java.util.List;
 
 public class GameDesktopLauncher implements ApplicationListener {
     private final int width = 10;
     private final int height = 8;
+    private final int maxTanksCount = 5;
 
     private GraphicsController graphicsController;
     private final CollisionDetector collisionDetector = new CollisionDetector(width, height);
@@ -30,38 +23,17 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     @Override
     public void create() {
-        RandomObjectDirectionsGenerator randomInstructionsGenerator = new RandomObjectDirectionsGenerator();
-
-        InputController inputController = new InputController(List.of(randomInstructionsGenerator));
         graphicsController = new GraphicsController("level.tmx");
-        LevelGenerator generator = new FileLevelGenerator("src/main/resources/levels/level1.txt", inputController, List.of(graphicsController, collisionDetector, randomInstructionsGenerator));
-//        LevelGenerator generator = new RandomLevelGenerator(width, height, inputController, List.of(graphicsController, collisionDetector));
+
+        LevelGenerator generator = new RandomLevelGenerator(width, height, maxTanksCount, List.of(graphicsController, collisionDetector));
         level = generator.generate();
-        level.add(new Tank(new GridPoint2(0, 0)));
-        level.add(new Tank(new GridPoint2(0, 1)));
-        level.add(new Tank(new GridPoint2(0, 2)));
-        level.add(new Tank(new GridPoint2(0, 3)));
 
-
-        initMappings(inputController, level.getPlayer());
         graphicsController.createObjects();
     }
 
-    void initMappings(InputController inputController, MapObject player) {
-        inputController.addMapping(Input.Keys.UP, Direction.UP, player);
-        inputController.addMapping(Input.Keys.W, Direction.UP, player);
-        inputController.addMapping(Input.Keys.LEFT, Direction.LEFT, player);
-        inputController.addMapping(Input.Keys.A, Direction.LEFT, player);
-        inputController.addMapping(Input.Keys.DOWN, Direction.DOWN, player);
-        inputController.addMapping(Input.Keys.S, Direction.DOWN, player);
-        inputController.addMapping(Input.Keys.RIGHT, Direction.RIGHT, player);
-        inputController.addMapping(Input.Keys.D, Direction.RIGHT, player);
-    }
-
-
     @Override
     public void render() {
-        level.applyInstructions();
+        level.applyAction();
         graphicsController.moveRectangles();
 
         level.updateState(Gdx.graphics.getDeltaTime());

@@ -1,11 +1,12 @@
-package ru.mipt.bit.platformer.instructions;
+package ru.mipt.bit.platformer.game.actions;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.entities.MapObject;
+import ru.mipt.bit.platformer.game.Action;
+import ru.mipt.bit.platformer.game.MapObject;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public enum Direction implements Instruction {
+public enum Direction implements Action {
     UP(new GridPoint2(0,1), 90),
     RIGHT(new GridPoint2(1,0), 0),
     LEFT(new GridPoint2(-1,0), -180),
@@ -29,7 +30,7 @@ public enum Direction implements Instruction {
     }
 
     @Override
-    public void apply(MapObject object) {
+    public void applyTo(MapObject object) {
         object.move(this);
     }
 
