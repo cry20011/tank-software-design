@@ -3,6 +3,7 @@ package ru.mipt.bit.platformer.game.actions;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.game.Action;
 import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.entities.Movable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -31,7 +32,7 @@ public enum Direction implements Action {
 
     @Override
     public void applyTo(MapObject object) {
-        object.move(this);
+        ((Movable) object).move(this);
     }
 
     public float getRotation() {

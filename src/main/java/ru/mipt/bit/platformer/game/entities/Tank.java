@@ -1,16 +1,15 @@
 package ru.mipt.bit.platformer.game.entities;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.game.Action;
-import ru.mipt.bit.platformer.game.actions.Direction;
+import ru.mipt.bit.platformer.game.Level;
 import ru.mipt.bit.platformer.game.MapObject;
-import ru.mipt.bit.platformer.game.ActionGenerator;
+import ru.mipt.bit.platformer.game.actions.Direction;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.collides;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
-public class Tank implements MapObject {
+public class Tank implements MapObject, Movable, Shootable {
     private final float DEFAULT_MOVEMENT_SPEED = 0.4f;
     private final Direction DEFAULT_DIRECTION = Direction.UP;
     public static final float MOVEMENT_COMPLETED = 1f;
@@ -21,15 +20,12 @@ public class Tank implements MapObject {
     private GridPoint2 destinationCoordinates;
     private Direction direction;
 
-    private final ActionGenerator actionGenerator;
-
-    public Tank(GridPoint2 coordinates, ActionGenerator actionGenerator) {
+    public Tank(GridPoint2 coordinates) {
         this.movementProgress = 1;
         this.coordinates = coordinates;
         this.destinationCoordinates = coordinates;
         this.direction = DEFAULT_DIRECTION;
         this.movementSpeed = DEFAULT_MOVEMENT_SPEED;
-        this.actionGenerator = actionGenerator;
     }
 
     private boolean isMoving() {
@@ -67,15 +63,8 @@ public class Tank implements MapObject {
     }
 
     @Override
-    public void applyNextAction() {
-        if (actionGenerator == null) {
-            return;
-        }
-
-        Action action = actionGenerator.generateFor(this);
-        if (action != null) {
-            action.applyTo(this);
-        }
+    public void shoot() {
+        Level.get().add(new Bullet(coordinates, direction));
     }
 
     @Override
@@ -83,17 +72,15 @@ public class Tank implements MapObject {
         return coordinates;
     }
 
-    @Override
     public GridPoint2 getDestinationCoordinates() {
         return destinationCoordinates;
     }
 
     @Override
-    public float getRotation() {
-        return direction.getRotation();
+    public Direction getDirection() {
+        return direction;
     }
 
-    @Override
     public float getMovementProgress() {
         return movementProgress;
     }

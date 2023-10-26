@@ -5,11 +5,8 @@ import ru.mipt.bit.platformer.game.actions.Direction;
 
 public interface MapObject {
     GridPoint2 getCoordinates();
-    default float getRotation() {return 0f;}
+    default Direction getDirection() {return Direction.UP;}
     default void updateState(float deltaTime) {}
     default GridPoint2 getDestinationCoordinates() {return getCoordinates();}
     default float getMovementProgress() {return 1f;}
-    default void move(Direction direction) {}
-
-    default void applyNextAction() {}
 }

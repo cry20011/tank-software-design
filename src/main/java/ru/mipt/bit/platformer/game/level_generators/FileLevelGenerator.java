@@ -1,11 +1,8 @@
 package ru.mipt.bit.platformer.game.level_generators;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.game.Level;
-import ru.mipt.bit.platformer.game.LevelGenerator;
-import ru.mipt.bit.platformer.game.ObjectAddHandler;
-import ru.mipt.bit.platformer.game.action_generators.KeyboadActionGenerator;
-import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.*;
+import ru.mipt.bit.platformer.game.action_generators.KeyboadTanksController;
 import ru.mipt.bit.platformer.game.entities.Tank;
 import ru.mipt.bit.platformer.game.entities.Tree;
 
@@ -17,11 +14,13 @@ import java.util.List;
 
 public class FileLevelGenerator implements LevelGenerator {
     private final String path;
-    private final List<ObjectAddHandler> handlerList = new ArrayList<>();
-    private MapObject player;
+    private final List<ObjectsController> controllers = new ArrayList<>();
+    private final List<LevelListener> handlerList = new ArrayList<>();
+    private Tank player;
 
-    public FileLevelGenerator(String path, List<ObjectAddHandler> handlers) {
+    public FileLevelGenerator(String path, List<ObjectsController> controllers, List<LevelListener> handlers) {
         this.path = path;
+        this.controllers.addAll(controllers);
         this.handlerList.addAll(handlers);
     }
 
@@ -46,7 +45,7 @@ public class FileLevelGenerator implements LevelGenerator {
 
     private void setObjectByChar(List<MapObject> objects, char c, int x, int y) {
         if (c == 'X') {
-            this.player = new Tank(new GridPoint2(x, y), new KeyboadActionGenerator());
+            this.player = new Tank(new GridPoint2(x, y));
         } else if (c == 'T') {
             objects.add(new Tree(new GridPoint2(x, y)));
         }
@@ -55,7 +54,11 @@ public class FileLevelGenerator implements LevelGenerator {
     @Override
     public Level generate() {
         List<MapObject> objects = getObjectsFromFile();
-        Level level = new Level(player, handlerList);
+
+        KeyboadTanksController playerController = new KeyboadTanksController(this.player);
+        controllers.add(playerController);
+
+        Level level = new Level(player, controllers, handlerList);
 
         objects.forEach(level::add);
 

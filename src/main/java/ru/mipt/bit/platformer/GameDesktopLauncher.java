@@ -5,9 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import ru.mipt.bit.platformer.game.Level;
+import ru.mipt.bit.platformer.game.LevelGenerator;
+import ru.mipt.bit.platformer.game.action_generators.BulletsController;
+import ru.mipt.bit.platformer.game.action_generators.RandomTanksController;
 import ru.mipt.bit.platformer.game.game_engine.CollisionDetector;
 import ru.mipt.bit.platformer.game.graphics.GraphicsController;
-import ru.mipt.bit.platformer.game.LevelGenerator;
 import ru.mipt.bit.platformer.game.level_generators.RandomLevelGenerator;
 
 import java.util.List;
@@ -25,15 +27,17 @@ public class GameDesktopLauncher implements ApplicationListener {
     public void create() {
         graphicsController = new GraphicsController("level.tmx");
 
-        LevelGenerator generator = new RandomLevelGenerator(width, height, maxTanksCount, List.of(graphicsController, collisionDetector));
+        LevelGenerator generator = new RandomLevelGenerator(
+                width, height, maxTanksCount,
+                List.of(new RandomTanksController(), new BulletsController()),
+                List.of(graphicsController, collisionDetector)
+        );
         level = generator.generate();
-
-        graphicsController.createObjects();
     }
 
     @Override
     public void render() {
-        level.applyAction();
+        level.applyActions();
         graphicsController.moveRectangles();
 
         level.updateState(Gdx.graphics.getDeltaTime());

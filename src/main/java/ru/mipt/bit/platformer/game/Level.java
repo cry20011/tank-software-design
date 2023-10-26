@@ -3,26 +3,41 @@ package ru.mipt.bit.platformer.game;
 import java.util.*;
 
 public class Level {
-    private final List<ObjectAddHandler> objectAddHandlers = new ArrayList<>();
+    private static Level level = null;
+    public static Level get() {
+        return level;
+    }
+
+    private final List<ObjectsController> controllers = new ArrayList<>();
+    private final List<LevelListener> levelListeners = new ArrayList<>();
 
     private final MapObject player;
     private final List<MapObject> objects = new ArrayList<>();
 
-    public Level(MapObject player, List<ObjectAddHandler> objectAddHandlers) {
-        this.objectAddHandlers.addAll(objectAddHandlers);
+    public Level(MapObject player, List<ObjectsController> controllers, List<LevelListener> levelListeners) {
+        level = this;
 
+        this.levelListeners.addAll(levelListeners);
+        this.controllers.addAll(controllers);
         this.player = player;
-        objectAddHandlers.forEach(objectAddHandler -> objectAddHandler.add(player));
+
+        levelListeners.forEach(handler -> handler.add(player));
     }
 
     public void add(MapObject object) {
-        objectAddHandlers.forEach(objectAddHandler -> objectAddHandler.add(object));
+        controllers.forEach(controller -> controller.add(object));
+        levelListeners.forEach(handler -> handler.add(object));
         objects.add(object);
     }
 
-    public void applyAction() {
-        player.applyNextAction();
-        objects.forEach(MapObject::applyNextAction);
+    public void remove(MapObject object) {
+        controllers.forEach(controller -> controller.remove(object));
+        levelListeners.forEach(handler -> handler.remove(object));
+        objects.remove(object);
+    }
+
+    public void applyActions() {
+        controllers.forEach(controller -> controller.nextActions().forEach((object, action) -> action.applyTo(object)));
     }
 
     public void updateState(float deltaTime) {

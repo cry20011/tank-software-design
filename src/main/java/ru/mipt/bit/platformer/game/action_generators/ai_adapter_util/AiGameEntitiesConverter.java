@@ -33,7 +33,7 @@ public class AiGameEntitiesConverter {
                 .y(object.getCoordinates().y)
                 .destX(object.getCoordinates().x)
                 .destY(object.getCoordinates().y)
-                .orientation(degreesToOrientation(object.getRotation()))
+                .orientation(degreesToOrientation(object.getDirection().getRotation()))
                 .build();
     }
 
