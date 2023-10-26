@@ -64,7 +64,7 @@ public class Tank implements MapObject, Movable, Shootable {
 
     @Override
     public void shoot() {
-        Level.get().add(new Bullet(coordinates, direction));
+        Level.get().add(new Bullet(direction.apply(coordinates), direction));
     }
 
     @Override

@@ -10,7 +10,7 @@ import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.collides
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
 public class Bullet implements MapObject, Movable {
-    private final float DEFAULT_MOVEMENT_SPEED = 0.1f;
+    private final float DEFAULT_MOVEMENT_SPEED = 0.05f;
     public static final float MOVEMENT_COMPLETED = 1f;
     public static final int MOVEMENT_STARTED = 0;
     private final float movementSpeed;

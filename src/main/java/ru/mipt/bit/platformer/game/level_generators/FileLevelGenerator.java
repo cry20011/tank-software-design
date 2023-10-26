@@ -48,6 +48,8 @@ public class FileLevelGenerator implements LevelGenerator {
             this.player = new Tank(new GridPoint2(x, y));
         } else if (c == 'T') {
             objects.add(new Tree(new GridPoint2(x, y)));
+        } else if (c == 'E') {
+            objects.add(new Tank(new GridPoint2(x, y)));
         }
     }
 

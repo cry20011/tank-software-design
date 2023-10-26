@@ -10,7 +10,7 @@ import ru.mipt.bit.platformer.game.action_generators.BulletsController;
 import ru.mipt.bit.platformer.game.action_generators.RandomTanksController;
 import ru.mipt.bit.platformer.game.game_engine.CollisionDetector;
 import ru.mipt.bit.platformer.game.graphics.GraphicsController;
-import ru.mipt.bit.platformer.game.level_generators.RandomLevelGenerator;
+import ru.mipt.bit.platformer.game.level_generators.FileLevelGenerator;
 
 import java.util.List;
 
@@ -27,8 +27,8 @@ public class GameDesktopLauncher implements ApplicationListener {
     public void create() {
         graphicsController = new GraphicsController("level.tmx");
 
-        LevelGenerator generator = new RandomLevelGenerator(
-                width, height, maxTanksCount,
+        LevelGenerator generator = new FileLevelGenerator(
+                "src/main/resources/levels/level1.txt",
                 List.of(new RandomTanksController(), new BulletsController()),
                 List.of(graphicsController, collisionDetector)
         );
