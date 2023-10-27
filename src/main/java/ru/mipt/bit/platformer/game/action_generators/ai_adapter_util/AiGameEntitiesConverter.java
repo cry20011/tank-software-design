@@ -6,24 +6,20 @@ import org.awesome.ai.state.movable.Orientation;
 import ru.mipt.bit.platformer.game.Action;
 import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.actions.Direction;
+import ru.mipt.bit.platformer.game.actions.Shoot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AiGameEntitiesConverter {
     public static Action convertAiAction(org.awesome.ai.Action action) {
-        switch (action) {
-            case MoveNorth:
-                return Direction.UP;
-            case MoveWest:
-                return Direction.RIGHT;
-            case MoveEast:
-                return Direction.LEFT;
-            case MoveSouth:
-                return Direction.DOWN;
-            default:
-                return null;
-        }
+        return switch (action) {
+            case Shoot -> new Shoot();
+            case MoveNorth -> Direction.UP;
+            case MoveWest -> Direction.RIGHT;
+            case MoveEast -> Direction.LEFT;
+            case MoveSouth -> Direction.DOWN;
+        };
     }
 
     public static Bot mapObjectToBot(MapObject object) {
@@ -52,16 +48,12 @@ public class AiGameEntitiesConverter {
     }
 
     public static Orientation degreesToOrientation(float degrees) {
-        switch ((int) degrees) {
-            case 90:
-                return Orientation.N;
-            case 0:
-                return Orientation.W;
-            case -180:
-                return Orientation.E;
-            case -90:
-                return Orientation.S;
-        }
-        return Orientation.N;
+        return switch ((int) degrees) {
+            case 90 -> Orientation.N;
+            case 0 -> Orientation.W;
+            case -180 -> Orientation.E;
+            case -90 -> Orientation.S;
+            default -> Orientation.N;
+        };
     }
 }
