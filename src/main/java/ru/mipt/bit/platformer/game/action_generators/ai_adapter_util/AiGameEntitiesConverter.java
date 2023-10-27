@@ -33,7 +33,7 @@ public class AiGameEntitiesConverter {
                 .build();
     }
 
-    public static GameState gameStateFromLevel(List<MapObject> objects, int width, int height) {
+    public static GameState makeGameState(List<MapObject> objects, int width, int height) {
         return new GameState.GameStateBuilder()
                 .bots(mapObjectsToBots(objects))
                 .levelWidth(width)
