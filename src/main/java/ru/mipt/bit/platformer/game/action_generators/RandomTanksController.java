@@ -4,7 +4,6 @@ import ru.mipt.bit.platformer.game.Action;
 import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.LevelListener;
 import ru.mipt.bit.platformer.game.ObjectsController;
-import ru.mipt.bit.platformer.game.action_generators.random_actions_generator_util.ActionGenerator;
 import ru.mipt.bit.platformer.game.action_generators.random_actions_generator_util.RandomTankActionGenerator;
 import ru.mipt.bit.platformer.game.entities.Tank;
 
