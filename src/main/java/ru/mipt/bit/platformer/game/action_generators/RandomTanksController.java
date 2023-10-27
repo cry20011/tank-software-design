@@ -4,14 +4,13 @@ import ru.mipt.bit.platformer.game.Action;
 import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.LevelListener;
 import ru.mipt.bit.platformer.game.ObjectsController;
-import ru.mipt.bit.platformer.game.actions.Direction;
+import ru.mipt.bit.platformer.game.action_generators.random_actions_generator_util.ActionGenerator;
+import ru.mipt.bit.platformer.game.action_generators.random_actions_generator_util.RandomTankActionGenerator;
 import ru.mipt.bit.platformer.game.entities.Tank;
-import ru.mipt.bit.platformer.game.action_generators.random_actions_generator_util.TankActions;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,13 +19,14 @@ public class RandomTanksController implements ObjectsController, LevelListener {
     private final long GENERATION_INTERVAL_MILLIS = 250;
     private LocalTime lastGenTime = LocalTime.now();
 
-    public RandomTanksController() {}
+    public RandomTanksController() {
+    }
 
     @Override
     public Map<MapObject, Action> nextActions() {
         if (readyToGenerate()) {
             lastGenTime = LocalTime.now();
-            return objects.stream().collect(Collectors.toMap(Function.identity(), it -> TankActions.randomTankAction()));
+            return objects.stream().collect(Collectors.toMap(Function.identity(), it -> RandomTankActionGenerator.generate()));
 
         }
         return Collections.emptyMap();
