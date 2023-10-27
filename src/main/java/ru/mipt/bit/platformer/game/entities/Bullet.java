@@ -6,7 +6,7 @@ import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.actions.Direction;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
-import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.collides;
+import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.getCollidedObject;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
 public class Bullet implements MapObject, Movable {
@@ -19,6 +19,7 @@ public class Bullet implements MapObject, Movable {
     private GridPoint2 destinationCoordinates;
     private final Direction direction;
 
+    private final int damage = 25;
 
     public Bullet(GridPoint2 coordinates, Direction direction) {
         this.movementProgress = 1;
@@ -69,9 +70,13 @@ public class Bullet implements MapObject, Movable {
         if (isMoving()) {
             GridPoint2 targetCoordinates = direction.apply(coordinates);
 
-            if (!collides(this, targetCoordinates)) {
+            MapObject collidedObject = getCollidedObject(this, targetCoordinates);
+            if (collidedObject == null) {
                 moveTo(targetCoordinates);
             } else {
+                if (collidedObject instanceof DamageReceiver receiver) {
+                    receiver.receiveDamage(this.damage);
+                }
                 Level.get().remove(this);
             }
         }

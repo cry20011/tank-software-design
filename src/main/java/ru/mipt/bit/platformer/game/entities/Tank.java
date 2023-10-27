@@ -5,20 +5,26 @@ import ru.mipt.bit.platformer.game.Level;
 import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.actions.Direction;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+
 import static com.badlogic.gdx.math.MathUtils.isEqual;
-import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.collides;
+import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.getCollidedObject;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
-public class Tank implements MapObject, Movable, Shootable {
+public class Tank implements MapObject, Movable, Shootable, DamageReceiver {
     private final float DEFAULT_MOVEMENT_SPEED = 0.4f;
     private final Direction DEFAULT_DIRECTION = Direction.UP;
-    public static final float MOVEMENT_COMPLETED = 1f;
-    public static final int MOVEMENT_STARTED = 0;
+    private static final float MOVEMENT_COMPLETED = 1f;
+    private static final int MOVEMENT_STARTED = 0;
+    private final long RELOAD_MILLIS = 500;
+    private LocalTime lastShootTime = LocalTime.now();
     private final float movementSpeed;
     private float movementProgress;
     private GridPoint2 coordinates;
     private GridPoint2 destinationCoordinates;
     private Direction direction;
+    private int health = 100;
 
     public Tank(GridPoint2 coordinates) {
         this.movementProgress = 1;
@@ -54,7 +60,7 @@ public class Tank implements MapObject, Movable, Shootable {
         if (isMoving()) {
             GridPoint2 targetCoordinates = direction.apply(coordinates);
 
-            if (!collides(this, targetCoordinates)) {
+            if (getCollidedObject(this, targetCoordinates) == null) {
                 moveTo(targetCoordinates);
             }
 
@@ -64,7 +70,14 @@ public class Tank implements MapObject, Movable, Shootable {
 
     @Override
     public void shoot() {
-        Level.get().add(new Bullet(direction.apply(coordinates), direction));
+        if (readyToShoot()) {
+            Level.get().add(new Bullet(direction.apply(coordinates), direction));
+            lastShootTime = LocalTime.now();
+        }
+    }
+
+    private boolean readyToShoot() {
+        return LocalTime.now().isAfter(lastShootTime.plus(RELOAD_MILLIS, ChronoUnit.MILLIS));
     }
 
     @Override
@@ -83,5 +96,13 @@ public class Tank implements MapObject, Movable, Shootable {
 
     public float getMovementProgress() {
         return movementProgress;
+    }
+
+    @Override
+    public void receiveDamage(int damage) {
+        this.health -= damage;
+        if (this.health <= 0) {
+            Level.get().remove(this);
+        }
     }
 }

@@ -8,36 +8,36 @@ public class Level {
         return level;
     }
 
-    private final List<ObjectsController> controllers = new ArrayList<>();
+    private final List<ObjectsController> objectControllers = new ArrayList<>();
     private final List<LevelListener> levelListeners = new ArrayList<>();
 
     private final MapObject player;
     private final List<MapObject> objects = new ArrayList<>();
 
-    public Level(MapObject player, List<ObjectsController> controllers, List<LevelListener> levelListeners) {
+    public Level(MapObject player, List<ObjectsController> objectControllers, List<LevelListener> levelListeners) {
         level = this;
 
         this.levelListeners.addAll(levelListeners);
-        this.controllers.addAll(controllers);
+        this.objectControllers.addAll(objectControllers);
         this.player = player;
 
         levelListeners.forEach(handler -> handler.add(player));
     }
 
     public void add(MapObject object) {
-        controllers.forEach(controller -> controller.add(object));
+        objectControllers.forEach(controller -> controller.add(object));
         levelListeners.forEach(handler -> handler.add(object));
         objects.add(object);
     }
 
     public void remove(MapObject object) {
-        controllers.forEach(controller -> controller.remove(object));
-        levelListeners.forEach(handler -> handler.remove(object));
+        objectControllers.forEach(controller -> controller.remove(object));
+        levelListeners.forEach(listener -> listener.remove(object));
         objects.remove(object);
     }
 
     public void applyActions() {
-        controllers.forEach(controller -> controller.nextActions().forEach((object, action) -> action.applyTo(object)));
+        objectControllers.forEach(controller -> controller.nextActions().forEach((object, action) -> action.applyTo(object)));
     }
 
     public void updateState(float deltaTime) {

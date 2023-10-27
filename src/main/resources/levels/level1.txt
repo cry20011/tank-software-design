@@ -1,8 +1,8 @@
-___TEET___
-__TTEETTTT
-_________T
-TTTT__T__T
+___TTET___
+__TTTETTTT
+____T_T__T
+TT____T__T
 ______T___
-_____XT___
+_E___E____
 ___T__T___
-___T__T___
+___T__T__X

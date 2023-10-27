@@ -3,6 +3,8 @@ package ru.mipt.bit.platformer.game.game_engine;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.LevelListener;
+import ru.mipt.bit.platformer.game.actions.Direction;
+import ru.mipt.bit.platformer.game.entities.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +30,27 @@ public class CollisionDetector implements LevelListener {
         objects.remove(object);
     }
 
-    static public boolean collides(MapObject object, GridPoint2 targetCoordinates) {
+    static public MapObject getCollidedObject(MapObject object, GridPoint2 targetCoordinates) {
+        if (!inArea(targetCoordinates)) {
+            return new Tree(targetCoordinates);
+        }
         for (MapObject other : objects) {
             if (other != object) {
-                if (targetCoordinates.equals(other.getCoordinates()) || targetCoordinates.equals(other.getDestinationCoordinates()) || !inArea(targetCoordinates)) {
-                    return true;
+                if (collidedWithOther(object, other, targetCoordinates)) {
+                    return other;
                 }
             }
         }
-        return false;
+        return null;
     }
 
     static private boolean inArea(GridPoint2 coordinates) {
         return coordinates.x >= 0 && coordinates.x < width && coordinates.y >= 0 && coordinates.y < height;
+    }
+
+    static private boolean collidedWithOther(MapObject object, MapObject other, GridPoint2 targetCoordinates) {
+        return object.getCoordinates().equals(other.getCoordinates())
+                || targetCoordinates.equals(other.getCoordinates())
+                || targetCoordinates.equals(other.getDestinationCoordinates());
     }
 }
