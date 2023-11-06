@@ -11,11 +11,16 @@ import com.badlogic.gdx.utils.Disposable;
 import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.LevelListener;
 import ru.mipt.bit.platformer.game.entities.Bullet;
+import ru.mipt.bit.platformer.game.entities.Damagable;
 import ru.mipt.bit.platformer.game.entities.Tank;
 import ru.mipt.bit.platformer.game.entities.Tree;
+import ru.mipt.bit.platformer.game.graphics.graphics_objects.HealthDecorator;
+import ru.mipt.bit.platformer.game.graphics.graphics_objects.MapObjectGraphics;
 import ru.mipt.bit.platformer.util.TileMovement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
@@ -31,7 +36,7 @@ public class GraphicsController implements Disposable, LevelListener {
     private final Map<Class<? extends MapObject>, String> objectTexturesPathMap = new HashMap<>();
     private final Map<MapObject, Graphics> objectToGraphicsMap = new HashMap<>();
 
-    public GraphicsController(String mapFile) {
+    public GraphicsController(String mapFile, List<GraphicsActionGenerator> actionGenerators) {
         this.batch = new SpriteBatch();
         this.level = new TmxMapLoader().load(mapFile);
         this.levelRenderer = createSingleLayerMapRenderer(level, batch);
@@ -41,12 +46,19 @@ public class GraphicsController implements Disposable, LevelListener {
         this.objectTexturesPathMap.put(Tank.class, "images/tank_blue.png");
         this.objectTexturesPathMap.put(Tree.class, "images/greenTree.png");
         this.objectTexturesPathMap.put(Bullet.class, "images/bullet.png");
+
+//        this.actionGenerators.addAll(actionGenerators);
     }
 
     @Override
     public void add(MapObject object) {
-        objectToGraphicsMap.put(object, new Graphics(objectTexturesPathMap.get(object.getClass())));
-        moveRectangleAtTileCenter(groundLayer, objectToGraphicsMap.get(object).getRectangle(), object.getCoordinates());
+        Graphics graphics = new MapObjectGraphics(objectTexturesPathMap.get(object.getClass()), object);
+        if (object instanceof Damagable) {
+            graphics = new HealthDecorator(graphics);
+        }
+        graphics.setGraphics(groundLayer);
+        objectToGraphicsMap.put(object, graphics);
+
     }
 
     @Override
@@ -62,27 +74,18 @@ public class GraphicsController implements Disposable, LevelListener {
 
         batch.begin();
 
-        for (Map.Entry<MapObject, Graphics> entry: objectToGraphicsMap.entrySet()) {
-            drawTextureRegionUnscaled(batch, entry.getValue().getRegion(), entry.getValue().getRectangle(), entry.getKey().getDirection().getRotation());
-        }
+        objectToGraphicsMap.values().forEach(graphics -> graphics.drawTexture(batch));
 
         batch.end();
     }
 
     public void moveRectangles() {
-        for (MapObject object : objectToGraphicsMap.keySet()) {
-            tileMovement.moveRectangleBetweenTileCenters(
-                    objectToGraphicsMap.get(object).getRectangle(),
-                    object.getCoordinates(),
-                    object.getDestinationCoordinates(),
-                    object.getMovementProgress()
-            );
-        }
+        objectToGraphicsMap.values().forEach(graphics -> graphics.moveRectangles(tileMovement));
     }
 
     @Override
     public void dispose() {
-        objectToGraphicsMap.values().forEach(Graphics::dispose);
+        objectToGraphicsMap.values().forEach(Disposable::dispose);
         level.dispose();
         batch.dispose();
     }

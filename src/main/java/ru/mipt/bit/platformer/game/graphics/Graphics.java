@@ -1,33 +1,16 @@
 package ru.mipt.bit.platformer.game.graphics;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Disposable;
+import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.util.TileMovement;
 
-import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
+import java.util.List;
 
-public class Graphics implements Disposable {
-    private final Texture texture;
-    private final TextureRegion region;
-    private final Rectangle rectangle;
-
-    public Graphics(String texturePicPath) {
-        this.texture = new Texture(texturePicPath);
-        this.region = new TextureRegion(texture);
-        this.rectangle = createBoundingRectangle(region);
-    }
-
-    public TextureRegion getRegion() {
-        return region;
-    }
-
-    public Rectangle getRectangle() {
-        return rectangle;
-    }
-
-    @Override
-    public void dispose() {
-        texture.dispose();
-    }
+public interface Graphics extends Disposable {
+    void setGraphics(TiledMapTileLayer groundLayer);
+    void drawTexture(SpriteBatch batch);
+    void moveRectangles(TileMovement tileMovement);
+    MapObject getObject();
 }

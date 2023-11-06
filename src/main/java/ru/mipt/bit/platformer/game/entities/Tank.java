@@ -12,7 +12,7 @@ import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.getCollidedObject;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
-public class Tank implements MapObject, Movable, Shootable, DamageReceiver {
+public class Tank implements MapObject, Movable, Shootable, Damagable {
     private final float DEFAULT_MOVEMENT_SPEED = 0.4f;
     private final Direction DEFAULT_DIRECTION = Direction.UP;
     private static final float MOVEMENT_COMPLETED = 1f;
@@ -104,5 +104,10 @@ public class Tank implements MapObject, Movable, Shootable, DamageReceiver {
         if (this.health <= 0) {
             Level.get().remove(this);
         }
+    }
+
+    @Override
+    public int getHealth() {
+        return this.health;
     }
 }

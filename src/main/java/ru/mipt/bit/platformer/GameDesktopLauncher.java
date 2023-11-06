@@ -25,7 +25,7 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     @Override
     public void create() {
-        graphicsController = new GraphicsController("level.tmx");
+        graphicsController = new GraphicsController("level.tmx", null);
 
         LevelGenerator generator = new FileLevelGenerator(
                 "src/main/resources/levels/level1.txt",

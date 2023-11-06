@@ -74,7 +74,7 @@ public class Bullet implements MapObject, Movable {
             if (collidedObject == null) {
                 moveTo(targetCoordinates);
             } else {
-                if (collidedObject instanceof DamageReceiver receiver) {
+                if (collidedObject instanceof Damagable receiver) {
                     receiver.receiveDamage(this.damage);
                 }
                 Level.get().remove(this);
