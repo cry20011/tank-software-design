@@ -25,6 +25,8 @@ public class Tank implements MapObject, Movable, Shootable, Damagable {
     private GridPoint2 destinationCoordinates;
     private Direction direction;
     private int health = 100;
+    private final int MAX_HEALTH = 100;
+
 
     public Tank(GridPoint2 coordinates) {
         this.movementProgress = 1;
@@ -107,7 +109,7 @@ public class Tank implements MapObject, Movable, Shootable, Damagable {
     }
 
     @Override
-    public int getHealth() {
-        return this.health;
+    public int getHealthPercent() {
+        return this.health * 100 / MAX_HEALTH;
     }
 }

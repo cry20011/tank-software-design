@@ -14,7 +14,7 @@ import java.util.*;
 
 
 public class KeyboadTanksController implements ObjectsController, LevelListener {
-    private static final Map<Integer, Action> keyToInstructionMap = new HashMap<>();
+    private static final Map<Integer, Action> keyToActionMap = new HashMap<>();
 
     private final Tank object;
 
@@ -24,7 +24,7 @@ public class KeyboadTanksController implements ObjectsController, LevelListener 
     }
 
     public void addMapping(int key, Action action) {
-        keyToInstructionMap.put(key, action);
+        keyToActionMap.put(key, action);
     }
 
     void initMappings() {
@@ -42,9 +42,9 @@ public class KeyboadTanksController implements ObjectsController, LevelListener 
 
     @Override
     public Map<MapObject, Action> nextActions() {
-        for (Integer key : keyToInstructionMap.keySet()) {
+        for (Integer key : keyToActionMap.keySet()) {
             if (Gdx.input.isKeyPressed(key)) {
-                return Map.of(object, keyToInstructionMap.get(key));
+                return Map.of(object, keyToActionMap.get(key));
             }
         }
 

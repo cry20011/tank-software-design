@@ -6,18 +6,18 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import ru.mipt.bit.platformer.game.MapObject;
-import ru.mipt.bit.platformer.game.graphics.Graphics;
+import ru.mipt.bit.platformer.game.graphics.GraphicsObject;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-public class MapObjectGraphics implements Graphics {
+public class MapObjectGraphicsObject implements GraphicsObject {
     private final Texture texture;
     private final TextureRegion region;
     private final Rectangle rectangle;
     private final MapObject object;
 
-    public MapObjectGraphics(String texturePicPath, MapObject object) {
+    public MapObjectGraphicsObject(String texturePicPath, MapObject object) {
         this.texture = new Texture(texturePicPath);
         this.region = new TextureRegion(texture);
         this.rectangle = createBoundingRectangle(region);
@@ -28,7 +28,7 @@ public class MapObjectGraphics implements Graphics {
         return object;
     }
 
-    public void setGraphics(TiledMapTileLayer groundLayer) {
+    public void setupGraphics(TiledMapTileLayer groundLayer) {
         moveRectangleAtTileCenter(groundLayer, rectangle, object.getCoordinates());
     }
 
@@ -38,7 +38,7 @@ public class MapObjectGraphics implements Graphics {
     }
 
     @Override
-    public void moveRectangles(TileMovement tileMovement) {
+    public void moveGraphicsRectangle(TileMovement tileMovement) {
         tileMovement.moveRectangleBetweenTileCenters(rectangle, object.getCoordinates(), object.getDestinationCoordinates(), object.getMovementProgress());
     }
 

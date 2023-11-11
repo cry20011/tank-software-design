@@ -5,6 +5,7 @@ import ru.mipt.bit.platformer.game.*;
 import ru.mipt.bit.platformer.game.action_generators.KeyboadTanksController;
 import ru.mipt.bit.platformer.game.entities.Tank;
 import ru.mipt.bit.platformer.game.entities.Tree;
+import ru.mipt.bit.platformer.game.graphics.GraphicsController;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +16,7 @@ import java.util.List;
 public class FileLevelGenerator implements LevelGenerator {
     private final String path;
     private final List<ObjectsController> controllers = new ArrayList<>();
+    private final List<GraphicsController> graphicsControllers = new ArrayList<>();
     private final List<LevelListener> handlerList = new ArrayList<>();
     private Tank player;
 
