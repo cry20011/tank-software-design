@@ -19,7 +19,7 @@ public class Bullet implements MapObject, Movable {
     private GridPoint2 destinationCoordinates;
     private final Direction direction;
 
-    private final int damage = 25;
+    private final int damage = 45;
 
     public Bullet(GridPoint2 coordinates, Direction direction) {
         this.movementProgress = 1;

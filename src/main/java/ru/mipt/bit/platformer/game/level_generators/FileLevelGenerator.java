@@ -16,7 +16,6 @@ import java.util.List;
 public class FileLevelGenerator implements LevelGenerator {
     private final String path;
     private final List<ObjectsController> controllers = new ArrayList<>();
-    private final List<GraphicsController> graphicsControllers = new ArrayList<>();
     private final List<LevelListener> handlerList = new ArrayList<>();
     private Tank player;
 

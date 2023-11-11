@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.game.Level;
 import ru.mipt.bit.platformer.game.MapObject;
 import ru.mipt.bit.platformer.game.actions.Direction;
+import ru.mipt.bit.platformer.game.states.LightState;
+import ru.mipt.bit.platformer.game.states.TankState;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -19,21 +21,21 @@ public class Tank implements MapObject, Movable, Shootable, Damagable {
     private static final int MOVEMENT_STARTED = 0;
     private final long RELOAD_MILLIS = 500;
     private LocalTime lastShootTime = LocalTime.now();
-    private final float movementSpeed;
+    private float movementSpeed;
     private float movementProgress;
     private GridPoint2 coordinates;
     private GridPoint2 destinationCoordinates;
     private Direction direction;
     private int health = 100;
     private final int MAX_HEALTH = 100;
-
+    private TankState state;
 
     public Tank(GridPoint2 coordinates) {
         this.movementProgress = 1;
         this.coordinates = coordinates;
         this.destinationCoordinates = coordinates;
         this.direction = DEFAULT_DIRECTION;
-        this.movementSpeed = DEFAULT_MOVEMENT_SPEED;
+        this.state = new LightState(this);
     }
 
     private boolean isMoving() {
@@ -105,11 +107,25 @@ public class Tank implements MapObject, Movable, Shootable, Damagable {
         this.health -= damage;
         if (this.health <= 0) {
             Level.get().remove(this);
+        } else {
+            this.state.onHpChange();
         }
     }
 
     @Override
     public int getHealthPercent() {
         return this.health * 100 / MAX_HEALTH;
+    }
+
+    public void setMovementSpeed(float movementSpeed) {
+        this.movementSpeed = movementSpeed;
+    }
+
+    public void updateState(TankState state) {
+        this.state = state;
+    }
+
+    public TankState getState() {
+        return state;
     }
 }
