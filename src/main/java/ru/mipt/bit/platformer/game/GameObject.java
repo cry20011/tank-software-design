@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.game;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.game.actions.Direction;
 
-public interface MapObject {
+public interface GameObject {
     GridPoint2 getCoordinates();
     default Direction getDirection() {return Direction.UP;}
     default void updateState(float deltaTime) {}

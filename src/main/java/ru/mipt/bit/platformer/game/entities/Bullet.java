@@ -2,14 +2,14 @@ package ru.mipt.bit.platformer.game.entities;
 
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.game.Level;
-import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.GameObject;
 import ru.mipt.bit.platformer.game.actions.Direction;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.getCollidedObject;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
+import static ru.mipt.bit.platformer.game.graphics.util.GdxGameUtils.continueProgress;
 
-public class Bullet implements MapObject, Movable {
+public class Bullet implements GameObject, Movable {
     private final float DEFAULT_MOVEMENT_SPEED = 0.05f;
     public static final float MOVEMENT_COMPLETED = 1f;
     public static final int MOVEMENT_STARTED = 0;
@@ -41,11 +41,13 @@ public class Bullet implements MapObject, Movable {
 
     @Override
     public void updateState(float deltaTime) {
+        move(this.direction);
         movementProgress = continueProgress(movementProgress, deltaTime, movementSpeed);
         if (isMoving()) {
             coordinates = destinationCoordinates;
         }
     }
+
     @Override
     public GridPoint2 getDestinationCoordinates() {
         return destinationCoordinates;
@@ -70,14 +72,14 @@ public class Bullet implements MapObject, Movable {
         if (isMoving()) {
             GridPoint2 targetCoordinates = direction.apply(coordinates);
 
-            MapObject collidedObject = getCollidedObject(this, targetCoordinates);
+            GameObject collidedObject = getCollidedObject(this, targetCoordinates);
             if (collidedObject == null) {
                 moveTo(targetCoordinates);
             } else {
                 if (collidedObject instanceof Damagable receiver) {
                     receiver.receiveDamage(this.damage);
                 }
-                Level.get().remove(this);
+                Level.get().addToDestroyed(this);
             }
         }
     }

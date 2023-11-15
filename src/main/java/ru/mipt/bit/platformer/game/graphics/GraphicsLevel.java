@@ -8,23 +8,19 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Disposable;
-import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.GameObject;
 import ru.mipt.bit.platformer.game.LevelListener;
-import ru.mipt.bit.platformer.game.entities.Bullet;
-import ru.mipt.bit.platformer.game.entities.Damagable;
-import ru.mipt.bit.platformer.game.entities.Tank;
-import ru.mipt.bit.platformer.game.entities.Tree;
+import ru.mipt.bit.platformer.game.entities.*;
+import ru.mipt.bit.platformer.game.graphics.graphics_objects.GameObjectGraphics;
 import ru.mipt.bit.platformer.game.graphics.graphics_objects.decorators.HealthDecorator;
-import ru.mipt.bit.platformer.game.graphics.graphics_objects.MapObjectGraphicsObject;
-import ru.mipt.bit.platformer.util.TileMovement;
+import ru.mipt.bit.platformer.game.graphics.util.TileMovement;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
+import static ru.mipt.bit.platformer.game.graphics.util.GdxGameUtils.createSingleLayerMapRenderer;
+import static ru.mipt.bit.platformer.game.graphics.util.GdxGameUtils.getSingleLayer;
 
 public class GraphicsLevel implements Disposable, LevelListener {
     private final SpriteBatch batch;
@@ -33,11 +29,12 @@ public class GraphicsLevel implements Disposable, LevelListener {
     private final TiledMapTileLayer groundLayer;
     private final TileMovement tileMovement;
 
-    private final Map<Class<? extends MapObject>, String> objectTexturesPathMap = new HashMap<>();
-    private final Map<MapObject, GraphicsObject> objectToGraphicsMap = new HashMap<>();
-    private final List<GraphicsController> graphicsControllers = new ArrayList<>();
+    private final Map<Class<? extends GameObject>, String> objectTexturesPathMap = new HashMap<>();
+    private final Map<GameObject, GraphicsObject> objectToGraphicsMap = new HashMap<>();
 
-    public GraphicsLevel(String mapFile, List<GraphicsController> actionGenerators) {
+    private Player player;
+
+    public GraphicsLevel(String mapFile) {
         this.batch = new SpriteBatch();
         this.level = new TmxMapLoader().load(mapFile);
         this.levelRenderer = createSingleLayerMapRenderer(level, batch);
@@ -47,33 +44,40 @@ public class GraphicsLevel implements Disposable, LevelListener {
         this.objectTexturesPathMap.put(Tank.class, "images/tank_blue.png");
         this.objectTexturesPathMap.put(Tree.class, "images/greenTree.png");
         this.objectTexturesPathMap.put(Bullet.class, "images/bullet.png");
-
-        this.graphicsControllers.addAll(actionGenerators);
+        this.objectTexturesPathMap.put(Player.class, "images/player_tank.png");
     }
 
-    private GraphicsObject makeGraphics(MapObject object) {
-        GraphicsObject graphicsObject = new MapObjectGraphicsObject(objectTexturesPathMap.get(object.getClass()), object);
+    private GraphicsObject makeGraphics(GameObject object) {
+        GraphicsObject graphicsObject = new GameObjectGraphics(objectTexturesPathMap.get(object.getClass()), object);
         if (object instanceof Damagable) {
-            graphicsObject = new HealthDecorator(graphicsObject);
+            graphicsObject = new HealthDecorator(graphicsObject, player.getHealthToggle());
         }
         return graphicsObject;
     }
 
     @Override
-    public void add(MapObject object) {
+    public void add(GameObject object) {
         GraphicsObject graphicsObject = makeGraphics(object);
         graphicsObject.setupGraphics(groundLayer);
         objectToGraphicsMap.put(object, graphicsObject);
-        graphicsControllers.forEach(graphicsController -> graphicsController.add(graphicsObject));
     }
 
     @Override
-    public void remove(MapObject object) {
-        graphicsControllers.forEach(generator -> generator.remove(objectToGraphicsMap.get(object)));
+    public void addPlayer(Player player) {
+        this.player = player;
+        GraphicsObject graphicsObject = makeGraphics(this.player);
+        graphicsObject.setupGraphics(groundLayer);
+        objectToGraphicsMap.put(this.player, graphicsObject);
+    }
+
+    @Override
+    public void remove(GameObject object) {
         objectToGraphicsMap.remove(object);
     }
 
     public void renderGame() {
+        moveRectangles();
+
         Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
         Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
 
@@ -81,7 +85,6 @@ public class GraphicsLevel implements Disposable, LevelListener {
 
         batch.begin();
 
-        graphicsControllers.forEach(generator -> generator.nextActions().forEach((graphics, graphicsAction) -> graphicsAction.apply(batch, graphics)));
         objectToGraphicsMap.values().forEach(graphics -> graphics.drawTexture(batch));
 
         batch.end();

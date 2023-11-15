@@ -7,26 +7,28 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
-import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.GameObject;
+import ru.mipt.bit.platformer.game.Toggle;
 import ru.mipt.bit.platformer.game.entities.Damagable;
 import ru.mipt.bit.platformer.game.graphics.GraphicsObject;
-import ru.mipt.bit.platformer.util.TileMovement;
+import ru.mipt.bit.platformer.game.graphics.util.TileMovement;
 
-import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
+import static ru.mipt.bit.platformer.game.graphics.util.GdxGameUtils.*;
 
-public class HealthDecorator extends GraphicsObjectObjectDecorator {
+public class HealthDecorator extends GraphicsObjectDecorator {
     private final TextureRegion hpBarRegion;
     private final Rectangle hpBarRectangle;
     private TextureRegion leftHpRegion;
     private final Rectangle leftHpRectangle;
+    private final Toggle healthToggle;
 
-
-    public HealthDecorator(GraphicsObject mapObjectGraphicsObject) {
+    public HealthDecorator(GraphicsObject mapObjectGraphicsObject, Toggle healthToggle) {
         super(mapObjectGraphicsObject);
         this.hpBarRegion = new TextureRegion(createHpBarTexture(100, Color.WHITE));
         this.hpBarRectangle = createBoundingRectangle(this.hpBarRegion);
         this.leftHpRegion = new TextureRegion(createHpBarTexture(100, Color.GREEN));
         this.leftHpRectangle = createBoundingRectangle(this.leftHpRegion);
+        this.healthToggle = healthToggle;
     }
 
     private Texture createHpBarTexture(int health, Color color) {
@@ -48,6 +50,10 @@ public class HealthDecorator extends GraphicsObjectObjectDecorator {
     @Override
     public void drawTexture(SpriteBatch batch) {
         super.drawTexture(batch);
+        System.out.println(healthToggle.isOn());
+        if (healthToggle.isOn()) {
+            drawHpBar(batch);
+        }
     }
 
     public void drawHpBar(SpriteBatch batch) {
@@ -79,7 +85,7 @@ public class HealthDecorator extends GraphicsObjectObjectDecorator {
     }
 
     @Override
-    public MapObject getObject() {
+    public GameObject getObject() {
         return super.getObject();
     }
 

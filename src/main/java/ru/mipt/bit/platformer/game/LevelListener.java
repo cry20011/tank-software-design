@@ -1,6 +1,9 @@
 package ru.mipt.bit.platformer.game;
 
+import ru.mipt.bit.platformer.game.entities.Player;
+
 public interface LevelListener {
-    void add(MapObject object);
-    void remove(MapObject object);
+    void add(GameObject object);
+    void addPlayer(Player player);
+    void remove(GameObject object);
 }

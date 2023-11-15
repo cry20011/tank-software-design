@@ -3,6 +3,7 @@ package ru.mipt.bit.platformer.game.level_generators;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.game.*;
 import ru.mipt.bit.platformer.game.action_generators.KeyboadTanksController;
+import ru.mipt.bit.platformer.game.entities.Player;
 import ru.mipt.bit.platformer.game.entities.Tank;
 import ru.mipt.bit.platformer.game.entities.Tree;
 
@@ -16,7 +17,7 @@ public class RandomLevelGenerator implements LevelGenerator {
 
     private final List<LevelListener> handlerList = new ArrayList<>();
     private final List<ObjectsController> controllers = new ArrayList<>();
-    private Tank player;
+    private Player player;
 
     public RandomLevelGenerator(int width, int height, int maxTanksCount, List<ObjectsController> controllers, List<LevelListener> handlers) {
         this.width = width;
@@ -27,15 +28,15 @@ public class RandomLevelGenerator implements LevelGenerator {
         this.handlerList.addAll(handlers);
     }
 
-    private List<MapObject> generateObjects() {
-        List<MapObject> objects = new ArrayList<>();
+    private List<GameObject> generateObjects() {
+        List<GameObject> objects = new ArrayList<>();
 
         Set<GridPoint2> generated = new HashSet<>();
 
         GridPoint2 playerCoordinates = genRandomGridPoint2(width, height);
         generated.add(playerCoordinates);
 
-        this.player = new Tank(playerCoordinates);
+        this.player = new Player(playerCoordinates);
 
         genObstacles(objects, generated);
         genTanks(objects, generated);
@@ -43,7 +44,7 @@ public class RandomLevelGenerator implements LevelGenerator {
         return objects;
     }
 
-    private void genObstacles(List<MapObject> objects, Set<GridPoint2> generated) {
+    private void genObstacles(List<GameObject> objects, Set<GridPoint2> generated) {
         int genCount = ThreadLocalRandom.current().nextInt(1, width * height - 1);
         for (int i = 0; i < genCount; i++) {
             GridPoint2 coordinates = genRandomGridPoint2(width, height);
@@ -54,7 +55,7 @@ public class RandomLevelGenerator implements LevelGenerator {
         }
     }
 
-    private void genTanks(List<MapObject> objects, Set<GridPoint2> generated) {
+    private void genTanks(List<GameObject> objects, Set<GridPoint2> generated) {
         int genCount = ThreadLocalRandom.current().nextInt(1, maxTanksCount);
         for (int i = 0; i < genCount; i++) {
             GridPoint2 coordinates = genRandomGridPoint2(width, height);
@@ -74,13 +75,14 @@ public class RandomLevelGenerator implements LevelGenerator {
 
     @Override
     public Level generate() {
-        List<MapObject> objects = generateObjects();
+        List<GameObject> objects = generateObjects();
 
-        KeyboadTanksController playerController = new KeyboadTanksController(this.player);
+        KeyboadTanksController playerController = new KeyboadTanksController();
         controllers.add(playerController);
 
-        Level level = new Level(player, controllers, handlerList);
+        Level level = new Level(controllers, handlerList);
 
+        level.addPlayer(this.player);
         objects.forEach(level::add);
 
         return level;

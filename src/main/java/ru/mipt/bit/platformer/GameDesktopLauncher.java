@@ -6,11 +6,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import ru.mipt.bit.platformer.game.Level;
 import ru.mipt.bit.platformer.game.LevelGenerator;
-import ru.mipt.bit.platformer.game.action_generators.BulletsController;
-import ru.mipt.bit.platformer.game.action_generators.RandomTanksController;
 import ru.mipt.bit.platformer.game.game_engine.CollisionDetector;
 import ru.mipt.bit.platformer.game.graphics.GraphicsLevel;
-import ru.mipt.bit.platformer.game.graphics.graphics_actions_generators.KeyboardTankGraphicsController;
 import ru.mipt.bit.platformer.game.level_generators.FileLevelGenerator;
 
 import java.util.List;
@@ -20,17 +17,18 @@ public class GameDesktopLauncher implements ApplicationListener {
     private final int height = 8;
     private final int maxTanksCount = 5;
 
+//    private final Toggle healthToggle = new Toggle();
+
     private GraphicsLevel graphicsLevel;
     private final CollisionDetector collisionDetector = new CollisionDetector(width, height);
     private Level level;
 
     @Override
     public void create() {
-        graphicsLevel = new GraphicsLevel("level.tmx", List.of(new KeyboardTankGraphicsController()));
+        graphicsLevel = new GraphicsLevel("level.tmx");
 
         LevelGenerator generator = new FileLevelGenerator(
                 "src/main/resources/levels/level1.txt",
-                List.of(new RandomTanksController(), new BulletsController()),
                 List.of(graphicsLevel, collisionDetector)
         );
         level = generator.generate();
@@ -39,9 +37,8 @@ public class GameDesktopLauncher implements ApplicationListener {
     @Override
     public void render() {
         level.applyActions();
-        graphicsLevel.moveRectangles();
-
         level.updateState(Gdx.graphics.getDeltaTime());
+
         graphicsLevel.renderGame();
     }
 

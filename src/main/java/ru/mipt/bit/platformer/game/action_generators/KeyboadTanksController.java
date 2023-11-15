@@ -2,24 +2,26 @@ package ru.mipt.bit.platformer.game.action_generators;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import ru.mipt.bit.platformer.game.ObjectsController;
-import ru.mipt.bit.platformer.game.MapObject;
-import ru.mipt.bit.platformer.game.LevelListener;
-import ru.mipt.bit.platformer.game.actions.Direction;
 import ru.mipt.bit.platformer.game.Action;
+import ru.mipt.bit.platformer.game.GameObject;
+import ru.mipt.bit.platformer.game.LevelListener;
+import ru.mipt.bit.platformer.game.ObjectsController;
+import ru.mipt.bit.platformer.game.actions.Direction;
 import ru.mipt.bit.platformer.game.actions.Shoot;
-import ru.mipt.bit.platformer.game.entities.Tank;
+import ru.mipt.bit.platformer.game.actions.SwitchToggle;
+import ru.mipt.bit.platformer.game.entities.Player;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class KeyboadTanksController implements ObjectsController, LevelListener {
     private static final Map<Integer, Action> keyToActionMap = new HashMap<>();
 
-    private final Tank object;
+    private Player player;
 
-    public KeyboadTanksController(Tank object) {
-        this.object = object;
+    public KeyboadTanksController() {
         initMappings();
     }
 
@@ -36,15 +38,15 @@ public class KeyboadTanksController implements ObjectsController, LevelListener 
         addMapping(Input.Keys.S, Direction.DOWN);
         addMapping(Input.Keys.RIGHT, Direction.RIGHT);
         addMapping(Input.Keys.D, Direction.RIGHT);
-
         addMapping(Input.Keys.SPACE, new Shoot());
+        addMapping(Input.Keys.L, new SwitchToggle());
     }
 
     @Override
-    public Map<MapObject, Action> nextActions() {
+    public Map<GameObject, Action> nextActions() {
         for (Integer key : keyToActionMap.keySet()) {
             if (Gdx.input.isKeyPressed(key)) {
-                return Map.of(object, keyToActionMap.get(key));
+                return Map.of(player, keyToActionMap.get(key));
             }
         }
 
@@ -52,8 +54,15 @@ public class KeyboadTanksController implements ObjectsController, LevelListener 
     }
 
     @Override
-    public void add(MapObject object) {}
+    public void add(GameObject object) {
+    }
 
     @Override
-    public void remove(MapObject object) {}
+    public void addPlayer(Player player) {
+        this.player = player;
+    }
+
+    @Override
+    public void remove(GameObject object) {
+    }
 }

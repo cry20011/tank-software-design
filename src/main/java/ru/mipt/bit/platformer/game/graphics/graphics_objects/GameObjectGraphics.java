@@ -5,26 +5,26 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
-import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.GameObject;
 import ru.mipt.bit.platformer.game.graphics.GraphicsObject;
-import ru.mipt.bit.platformer.util.TileMovement;
+import ru.mipt.bit.platformer.game.graphics.util.TileMovement;
 
-import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
+import static ru.mipt.bit.platformer.game.graphics.util.GdxGameUtils.*;
 
-public class MapObjectGraphicsObject implements GraphicsObject {
+public class GameObjectGraphics implements GraphicsObject {
     private final Texture texture;
     private final TextureRegion region;
     private final Rectangle rectangle;
-    private final MapObject object;
+    private final GameObject object;
 
-    public MapObjectGraphicsObject(String texturePicPath, MapObject object) {
+    public GameObjectGraphics(String texturePicPath, GameObject object) {
         this.texture = new Texture(texturePicPath);
         this.region = new TextureRegion(texture);
         this.rectangle = createBoundingRectangle(region);
         this.object = object;
     }
 
-    public MapObject getObject() {
+    public GameObject getObject() {
         return object;
     }
 

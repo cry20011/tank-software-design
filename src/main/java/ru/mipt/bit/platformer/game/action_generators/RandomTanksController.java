@@ -1,10 +1,11 @@
 package ru.mipt.bit.platformer.game.action_generators;
 
 import ru.mipt.bit.platformer.game.Action;
-import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.GameObject;
 import ru.mipt.bit.platformer.game.LevelListener;
 import ru.mipt.bit.platformer.game.ObjectsController;
 import ru.mipt.bit.platformer.game.action_generators.random_actions_generator_util.RandomTankActionGenerator;
+import ru.mipt.bit.platformer.game.entities.Player;
 import ru.mipt.bit.platformer.game.entities.Tank;
 
 import java.time.LocalTime;
@@ -22,7 +23,7 @@ public class RandomTanksController implements ObjectsController, LevelListener {
     }
 
     @Override
-    public Map<MapObject, Action> nextActions() {
+    public Map<GameObject, Action> nextActions() {
         if (readyToGenerate()) {
             lastGenTime = LocalTime.now();
             return objects.stream().collect(Collectors.toMap(Function.identity(), it -> RandomTankActionGenerator.generate()));
@@ -36,14 +37,17 @@ public class RandomTanksController implements ObjectsController, LevelListener {
     }
 
     @Override
-    public void add(MapObject object) {
+    public void add(GameObject object) {
         if (object instanceof Tank tank) {
             objects.add(tank);
         }
     }
 
     @Override
-    public void remove(MapObject object) {
+    public void addPlayer(Player player) {}
+
+    @Override
+    public void remove(GameObject object) {
         if (object instanceof Tank tank) {
             objects.remove(tank);
         }

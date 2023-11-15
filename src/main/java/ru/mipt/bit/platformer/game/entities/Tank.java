@@ -2,7 +2,7 @@ package ru.mipt.bit.platformer.game.entities;
 
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.game.Level;
-import ru.mipt.bit.platformer.game.MapObject;
+import ru.mipt.bit.platformer.game.GameObject;
 import ru.mipt.bit.platformer.game.actions.Direction;
 import ru.mipt.bit.platformer.game.states.LightState;
 import ru.mipt.bit.platformer.game.states.TankState;
@@ -12,9 +12,9 @@ import java.time.temporal.ChronoUnit;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.game.game_engine.CollisionDetector.getCollidedObject;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
+import static ru.mipt.bit.platformer.game.graphics.util.GdxGameUtils.continueProgress;
 
-public class Tank implements MapObject, Movable, Shootable, Damagable {
+public class Tank implements GameObject, Movable, Shootable, Damagable {
     private final float DEFAULT_MOVEMENT_SPEED = 0.4f;
     private final Direction DEFAULT_DIRECTION = Direction.UP;
     private static final float MOVEMENT_COMPLETED = 1f;
@@ -106,7 +106,7 @@ public class Tank implements MapObject, Movable, Shootable, Damagable {
     public void receiveDamage(int damage) {
         this.health -= damage;
         if (this.health <= 0) {
-            Level.get().remove(this);
+            Level.get().addToDestroyed(this);
         } else {
             this.state.onHpChange();
         }
